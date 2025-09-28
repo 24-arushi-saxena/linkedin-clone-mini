@@ -2,23 +2,30 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 generator client {
   provider = "prisma-client-js"
 }
+
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String
-  password  String
-  bio       String?
-  profilePic String?
-  posts     Post[]
-  createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())  // Unique number for each user (like student ID)
+  email     String   @unique                        // Email address (must be unique)
+  name      String                                  // User's display name
+  password  String                                  // Encrypted password
+  bio       String?                                 // Optional bio (? means optional)
+  profilePic String?                                // Optional profile picture URL
+  posts     Post[]                                  // List of all posts by this user
+  createdAt DateTime @default(now())               // When account was created
+  updatedAt DateTime @updatedAt                    // When last updated
 }
+
 model Post {
-  id        Int      @id @default(autoincrement())
-  content   String
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-  createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())  // Unique post ID
+  content   String                                  // The actual post text
+  imageUrl  String?                                 // Optional image
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)  // Links to User table
+  authorId  Int                                     // Which user wrote this post
+  likes     Int      @default(0)                   // Number of likes (starts at 0)
+  createdAt DateTime @default(now())               // When posted
+  updatedAt DateTime @updatedAt                    // When last edited
 }

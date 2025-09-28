@@ -2,10 +2,16 @@ const express = require('express');
 const cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
 const redis = require('redis');
+const helmet = require('helmet');
 require('dotenv').config();
+
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
 
 const app = express();
 const prisma = new PrismaClient();
+
+app.use(helmet());
 
 // Create Redis client but don't connect immediately
 let redisClient;
@@ -35,9 +41,13 @@ async function initializeRedis() {
     redisClient = null;
   }
 }
-
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
+app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
+
+
 
 // Test route with improved error handling
 app.get('/test', async (req, res) => {
@@ -143,6 +153,15 @@ process.on('SIGINT', async () => {
     await redisClient.disconnect();
   }
   process.exit(0);
+});
+
+//Add error handling middleware:
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: 'Something went wrong!'
+  });
 });
 
 // Start the server

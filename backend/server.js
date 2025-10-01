@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
 const redis = require('redis');
+const postRoutes = require('./routes/post');
 const helmet = require('helmet');
 require('dotenv').config();
 
@@ -46,6 +47,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/posts', postRoutes);
 
 
 

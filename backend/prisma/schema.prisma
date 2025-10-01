@@ -35,4 +35,7 @@ model Post {
   likes     Int      @default(0)                   // Number of likes (starts at 0)
   createdAt DateTime @default(now())               // When posted
   updatedAt DateTime @updatedAt                    // When last edited
+
+  @@map("posts")
 }
+

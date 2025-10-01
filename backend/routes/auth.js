@@ -18,37 +18,66 @@ const authLimiter = rateLimit({
 // POST /api/auth/signup
 router.post('/signup', authLimiter, signupValidation, handleValidationErrors, async (req, res) => {
   try {
-    const { email, name, password, bio } = req.body;
+    const { 
+      email, 
+      username, 
+      firstName, 
+      lastName, 
+      password, 
+      bio,
+      profilePic,
+      avatar,
+      location,
+      website
+    } = req.body;
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
+    // Check if user already exists (email or username)
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email },
+          { username: username || email.split('@')[0] }
+        ]
+      }
     });
 
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: 'User with this email already exists'
+        message: 'User with this email or username already exists'
       });
     }
 
     // Hash password
     const hashedPassword = await hashPassword(password);
 
-    // Create user
+    // Create user with all fields
     const user = await prisma.user.create({
       data: {
         email,
-        name,
+        username: username || email.split('@')[0], // Use provided username or generate from email
+        firstName: firstName || null,
+        lastName: lastName || null,
         password: hashedPassword,
-        bio: bio || null
+        bio: bio || null,
+        profilePic: profilePic || null,
+        avatar: avatar || null,
+        location: location || null,
+        website: website || null
       },
       select: {
         id: true,
         email: true,
-        name: true,
+        username: true,
+        firstName: true,
+        lastName: true,
         bio: true,
-        createdAt: true
+        profilePic: true,
+        avatar: true,
+        location: true,
+        website: true,
+        createdAt: true,
+        updatedAt: true
       }
     });
 
@@ -81,9 +110,24 @@ router.post('/login', authLimiter, loginValidation, handleValidationErrors, asyn
   try {
     const { email, password } = req.body;
 
-    // Find user
+    // Find user with all profile fields
     const user = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        firstName: true,
+        lastName: true,
+        password: true,
+        bio: true,
+        profilePic: true,
+        avatar: true,
+        location: true,
+        website: true,
+        createdAt: true,
+        updatedAt: true
+      }
     });
 
     if (!user) {

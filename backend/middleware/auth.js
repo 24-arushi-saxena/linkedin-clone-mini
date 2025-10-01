@@ -29,16 +29,22 @@ async function authenticateToken(req, res, next) {
       });
     }
 
-    // Get user from database
+    // Get user from database with all profile fields
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
       select: {
         id: true,
         email: true,
-        name: true,
+        username: true,
+        firstName: true,
+        lastName: true,
         bio: true,
         profilePic: true,
-        createdAt: true
+        avatar: true,
+        location: true,
+        website: true,
+        createdAt: true,
+        updatedAt: true
       }
     });
 
@@ -78,10 +84,16 @@ async function optionalAuth(req, res, next) {
           select: {
             id: true,
             email: true,
-            name: true,
+            username: true,
+            firstName: true,
+            lastName: true,
             bio: true,
             profilePic: true,
-            createdAt: true
+            avatar: true,
+            location: true,
+            website: true,
+            createdAt: true,
+            updatedAt: true
           }
         });
         req.user = user;

@@ -10,13 +10,20 @@ generator client {
 model User {
   id        Int      @id @default(autoincrement())  // Unique number for each user (like student ID)
   email     String   @unique                        // Email address (must be unique)
-  name      String                                  // User's display name
+  username  String   @unique
+  firstName String?
+  lastName  String?                                  // User's display name
   password  String                                  // Encrypted password
   bio       String?                                 // Optional bio (? means optional)
-  profilePic String?                                // Optional profile picture URL
+  profilePic String? 
+  avatar    String?  // URL to profile picture
+  location  String?
+  website   String?                               // Optional profile picture URL
   posts     Post[]                                  // List of all posts by this user
   createdAt DateTime @default(now())               // When account was created
-  updatedAt DateTime @updatedAt                    // When last updated
+  updatedAt DateTime @updatedAt
+  
+  @@map("users")                    // When last updated
 }
 
 model Post {

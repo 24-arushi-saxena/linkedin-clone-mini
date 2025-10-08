@@ -7,6 +7,16 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
 model User {
   id        Int      @id @default(autoincrement())  // Unique number for each user (like student ID)
   email     String   @unique                        // Email address (must be unique)
@@ -20,8 +30,11 @@ model User {
   location  String?
   website   String?                               // Optional profile picture URL
   posts     Post[]                                  // List of all posts by this user
+  role      UserRole @default(USER)
   createdAt DateTime @default(now())               // When account was created
   updatedAt DateTime @updatedAt
+  sentConnections     Connection[] @relation("SentConnections")
+  receivedConnections Connection[] @relation("ReceivedConnections")
   
   @@map("users")                    // When last updated
 }
@@ -38,4 +51,26 @@ model Post {
 
   @@map("posts")
 }
+
+model Connection {
+  id          Int      @id @default(autoincrement())
+  senderId    Int                                      // Who sent the request
+  receiverId  Int                                      // Who received it
+  status      ConnectionStatus @default(PENDING)      // Current state
+  createdAt   DateTime @default(now())                // When sent
+  updatedAt   DateTime @updatedAt                     // When status changed
+  
+  // Relationships
+  sender      User     @relation("SentConnections", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User     @relation("ReceivedConnections", fields: [receiverId], references: [id], onDelete: Cascade)
+  
+  // Constraints
+  @@unique([senderId, receiverId])  // Can't send duplicate requests
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([status])
+  
+  @@map("connections")
+}
+
 

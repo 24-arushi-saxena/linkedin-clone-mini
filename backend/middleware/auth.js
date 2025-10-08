@@ -43,6 +43,7 @@ async function authenticateToken(req, res, next) {
         avatar: true,
         location: true,
         website: true,
+        // role: true, 
         createdAt: true,
         updatedAt: true
       }
@@ -92,6 +93,7 @@ async function optionalAuth(req, res, next) {
             avatar: true,
             location: true,
             website: true,
+            // role: true, 
             createdAt: true,
             updatedAt: true
           }

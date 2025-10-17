@@ -4,6 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 const redis = require('redis');
 const postRoutes = require('./routes/post');
 const connectionRoutes = require('./routes/connection');
+const adminRoutes = require('./routes/admin');
 const helmet = require('helmet');
 require('dotenv').config();
 
@@ -50,7 +51,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/connections', connectionRoutes);
-
+app.use('/api/admin', adminRoutes);
 
 
 // Test route with improved error handling

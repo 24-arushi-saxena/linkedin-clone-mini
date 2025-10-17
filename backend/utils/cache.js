@@ -45,10 +45,29 @@ async function clearUserCache(userId) {
   await redisClient.del([userKey, postsKey]);
 }
 
+// Set data in cache with expiration (in seconds)
+async function setCache(key, value, expireInSeconds = 3600) {
+  try {
+    await client.setex(key, expireInSeconds, value);
+  } catch (error) {
+    console.error('Cache set error:', error);
+  }
+}
+
+// Delete from cache
+async function deleteCache(key) {
+  try {
+    await client.del(key);
+  } catch (error) {
+    console.error('Cache delete error:', error);
+  }
+}
 module.exports = {
   cacheUser,
   getCachedUser,
   cacheUserPosts,
   getCachedUserPosts,
-  clearUserCache
+  clearUserCache,
+  setCache,
+  deleteCache
 };
